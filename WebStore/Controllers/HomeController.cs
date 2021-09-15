@@ -15,7 +15,11 @@ namespace WebStore.Controllers
         /// <returns></returns>
         public IActionResult Index()
         {
-            return Content("Hello from first controller");
+            //return Content("Hello from first controller");
+
+            //если у нас предаставление называется также как и действие
+            //то в парамерт метода ничего передавать не нужно
+            return View();
         }
         public IActionResult SecondAction(string id)
         {
