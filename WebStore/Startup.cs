@@ -71,9 +71,9 @@ namespace WebStore
                 //или других приложений
                 endpoints.MapControllerRoute(
                     "default",
-                    "(controller=Home)/(action=Index)/{id?}");
+                    "{controller=Home}/{action=Index}/{id?}");
                 //тоже самое что и
-                //endpoints.MapDefaultControllerRoute();
+                endpoints.MapDefaultControllerRoute();
             });
         }
     }
