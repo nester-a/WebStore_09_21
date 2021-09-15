@@ -1,6 +1,7 @@
 ﻿
 @model IEnumerable<WebStore.Models.Employee>
 
+
 <!DOCTYPE html>
 
 <html>
@@ -22,15 +23,18 @@
             </tr>
         </thead>
         <tbody>
-           @foreach(var emploeey in Model)
+           @foreach(var employee in Model)
             {
-               <tr>
-                   <td>@emploeey.Id</td>
-                   <td>@emploeey.LastName</td>
-                   <td>@emploeey.FirstName</td>
-                   <td>@emploeey.Patronymic</td>
-                   <td>@emploeey.Age</td>
-               </tr>
+            <tr>
+                <td>@employee.Id</td>
+                <td>@employee.LastName</td>
+                <td>@employee.FirstName</td>
+                <td>@employee.Patronymic</td>
+                <td>@employee.Age</td>
+                @*в качестве переметра в метод передаём нового сотрудника, у которого ИД равен ИД текущего сотрудника*@
+                @*таким образом "криво-косо" работает*@
+                <td>@Html.ActionLink("Детали", "Details", new { id = @employee.Id }, null)</td>
+            </tr>
             }
         </tbody>
     </table>

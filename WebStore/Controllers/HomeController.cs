@@ -33,10 +33,20 @@ namespace WebStore.Controllers
         {
             return Content($"Second action with parameter {id}");
         }
-
         public IActionResult Employees()
         {
             return View(_employees);
+        }
+
+        //принимаем сотрудника, находим про него инфу в базе и выводим
+        public IActionResult Details(Employee employee)
+        {
+            var tmpEmployee = _employees.Find(empl => empl.Id == employee.Id);
+            if (tmpEmployee != null)
+            {
+                return View(tmpEmployee);
+            }
+            return Content("Сотрудник не найден");
         }
     }
 }
