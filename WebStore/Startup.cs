@@ -30,7 +30,7 @@ namespace WebStore
         {
             //после добавления контроллеров с представлением
             //мы конфигурируем доступ к ним с помощью маршрутов
-            services.AddControllersWithViews();
+            services.AddControllersWithViews().AddRazorRuntimeCompilation();
         }
 
         /// <summary>
