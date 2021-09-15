@@ -39,6 +39,7 @@ namespace WebStore.Controllers
         }
 
         //принимаем сотрудника, находим про него инфу в базе и выводим
+        //хз почему, но не смог сделать так, чтобы просто принимало числовой ИДшник
         public IActionResult Details(Employee employee)
         {
             var tmpEmployee = _employees.Find(empl => empl.Id == employee.Id);
