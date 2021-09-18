@@ -51,7 +51,7 @@ namespace WebStore
             app.UseRouting();
 
 
-            var greetings = "Hello from my first ASP.NET Core APP";
+            //var greetings = "Hello from my first ASP.NET Core APP";
 
             //результат изменения файла конфигурации мы можем получить
             //благодаря нашему свойству Configuration
