@@ -47,6 +47,9 @@ namespace WebStore
                 app.UseDeveloperExceptionPage();
             }
 
+            //подключение статических ресурсов
+            app.UseStaticFiles();
+
             // здесь подключается маршрутизация
             app.UseRouting();
 
