@@ -19,5 +19,6 @@ namespace WebStore.Controllers
         public IActionResult Error404() => View();
         public IActionResult BlogSingle() => View();
         public IActionResult Cart() => View();
+        public IActionResult CheckOut() => View();
     }
 }
