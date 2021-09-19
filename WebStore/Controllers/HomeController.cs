@@ -15,5 +15,6 @@ namespace WebStore.Controllers
         /// </summary>
         /// <returns></returns>
         public IActionResult Index() => View();
+        public IActionResult Blog() => View();
     }
 }
