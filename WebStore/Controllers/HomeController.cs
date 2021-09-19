@@ -16,5 +16,6 @@ namespace WebStore.Controllers
         /// <returns></returns>
         public IActionResult Index() => View();
         public IActionResult Blog() => View();
+        public IActionResult Error404() => View();
     }
 }
