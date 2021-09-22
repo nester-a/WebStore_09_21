@@ -15,7 +15,6 @@ namespace WebStore.Controllers
         /// </summary>
         /// <returns></returns>
         public IActionResult Index() => View();
-        
         public IActionResult Error404() => View();
         public IActionResult Cart() => View();
         public IActionResult CheckOut() => View();
