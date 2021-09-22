@@ -53,13 +53,7 @@ namespace WebStore
             // здесь подключается маршрутизация
             app.UseRouting();
 
-
-            //var greetings = "Hello from my first ASP.NET Core APP";
-
-            //результат изменения файла конфигурации мы можем получить
-            //благодаря нашему свойству Configuration
-            var configurationGreetings = Configuration["Greetings"];
-            var logging = Configuration["Logging:LogLevel:Default"];
+            app.UseMiddleware();
 
             //здесь начинается обработа запросов
             app.UseEndpoints(endpoints =>
