@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using WebStore.Infrastructure.Middleware;
 
 namespace WebStore
 {
@@ -53,7 +54,7 @@ namespace WebStore
             // здесь подключается маршрутизация
             app.UseRouting();
 
-            app.UseMiddleware();
+            app.UseMiddleware<TestMiddleware>();
 
             //здесь начинается обработа запросов
             app.UseEndpoints(endpoints =>
