@@ -58,7 +58,10 @@ namespace WebStore.Services
             var db_employee = GetById(employee.Id);
             if (db_employee is null) return;
 
-            db_employee = (Employee)employee.Clone();
+            db_employee.FirstName = employee.FirstName;
+            db_employee.LastName = employee.LastName;
+            db_employee.Patronymic = employee.Patronymic;
+            db_employee.Age = employee.Age;
 
             //db.SaveChanges();
         }
