@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using WebStore.Infrastructure.Convaentions;
 using WebStore.Infrastructure.Middleware;
 
 namespace WebStore
@@ -31,7 +32,7 @@ namespace WebStore
         {
             //после добавления контроллеров с представлением
             //мы конфигурируем доступ к ним с помощью маршрутов
-            services.AddControllersWithViews().AddRazorRuntimeCompilation();
+            services.AddControllersWithViews(opt => opt.Conventions.Add(new TestControllerConvention())).AddRazorRuntimeCompilation();
         }
 
         /// <summary>
@@ -55,6 +56,7 @@ namespace WebStore
             app.UseRouting();
 
             app.UseMiddleware<TestMiddleware>();
+            app.UseWelcomePage("/welcome");
 
             //здесь начинается обработа запросов
             app.UseEndpoints(endpoints =>
