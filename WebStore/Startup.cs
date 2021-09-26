@@ -54,6 +54,7 @@ namespace WebStore
                 //здесь подключается страничка обработки исключений
                 //если мы находимся в режиме разработчика
                 app.UseDeveloperExceptionPage();
+                app.UseBrowserLink();
             }
 
             //app.UseStatusCodePages();
