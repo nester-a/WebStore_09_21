@@ -56,6 +56,8 @@ namespace WebStore
                 app.UseDeveloperExceptionPage();
             }
 
+            //app.UseStatusCodePages();
+
             //подключение статических ресурсов
             app.UseStaticFiles();
 
@@ -64,6 +66,8 @@ namespace WebStore
 
             app.UseMiddleware<TestMiddleware>();
             app.UseWelcomePage("/welcome");
+
+            //app.UseStatusCodePagesWithReExecute("/Home/Status/{0}");
 
             //здесь начинается обработа запросов
             app.UseEndpoints(endpoints =>
