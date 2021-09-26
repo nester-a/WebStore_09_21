@@ -8,11 +8,11 @@ using WebStore.ViewModels;
 
 namespace WebStore.Components
 {
-    public class SectionViewComponent :ViewComponent
+    public class SectionsViewComponent :ViewComponent
     {
         private readonly IProductData _productData;
 
-        public SectionViewComponent(IProductData productData)
+        public SectionsViewComponent(IProductData productData)
         {
             _productData = productData;
         }
@@ -33,7 +33,7 @@ namespace WebStore.Components
 
             foreach (var parent_section in parent_sections_views)
             {
-                var childs = sections.Where(s => s.Id == parent_section.Id);
+                var childs = sections.Where(s => s.ParentId == parent_section.Id);
 
                 foreach (var child_section in childs)
                 {
