@@ -4,6 +4,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using WebStore.Infrastructure.Convaentions;
+using WebStore.Infrastructure.Middleware;
+using WebStore.Services;
+using WebStore.Services.Interfaces;
 
 namespace WebStore
 {
@@ -28,9 +32,14 @@ namespace WebStore
         }
         public void ConfigureServices(IServiceCollection services)
         {
+            //регистрируем наш новый сервис
+            services.AddSingleton<IEmployeesData, InMemoryEmployeesData>();
+            //services.AddScoped<IEmployeesData, InMemoryEmployeesData>();
+            //services.AddTransient<IEmployeesData, InMemoryEmployeesData>();
+
             //после добавления контроллеров с представлением
             //мы конфигурируем доступ к ним с помощью маршрутов
-            services.AddControllersWithViews().AddRazorRuntimeCompilation();
+            services.AddControllersWithViews(opt => opt.Conventions.Add(new TestControllerConvention())).AddRazorRuntimeCompilation();
         }
 
         /// <summary>
@@ -53,13 +62,8 @@ namespace WebStore
             // здесь подключается маршрутизация
             app.UseRouting();
 
-
-            //var greetings = "Hello from my first ASP.NET Core APP";
-
-            //результат изменения файла конфигурации мы можем получить
-            //благодаря нашему свойству Configuration
-            var configurationGreetings = Configuration["Greetings"];
-            var logging = Configuration["Logging:LogLevel:Default"];
+            app.UseMiddleware<TestMiddleware>();
+            app.UseWelcomePage("/welcome");
 
             //здесь начинается обработа запросов
             app.UseEndpoints(endpoints =>
