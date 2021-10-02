@@ -35,6 +35,8 @@ namespace WebStore.Data
             }
 
             await InitializeProductsAsync();
+            await InitializeEmployeesAsync();
+            _logger.LogInformation("Завершение инициализации БД");
         }
 
         private async Task InitializeProductsAsync()
@@ -85,6 +87,26 @@ namespace WebStore.Data
                 await _db.Database.CommitTransactionAsync();
             }
             _logger.LogInformation("Запись товаров выполнена успешно");
+        }
+        private async Task InitializeEmployeesAsync()
+        {
+            if (_db.Employees.Any())
+            {
+                _logger.LogInformation("Инилциализация БД информацией о сотрудниках не требуется");
+                return;
+            }
+
+            _logger.LogInformation("Запись сотрудников...");
+            await using (await _db.Database.BeginTransactionAsync())
+            {
+                _db.Employees.AddRange(TestData.Employees);
+
+                await _db.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT [dbo].[Employees] ON");
+                await _db.SaveChangesAsync();
+                await _db.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT [dbo].[Employees] OFF");
+                await _db.Database.CommitTransactionAsync();
+            }
+            _logger.LogInformation("Запись сотрудников выполнена успешно");
         }
     }
 }
