@@ -48,7 +48,6 @@ namespace WebStore.Services.InSQL
         {
             if (employee is null) throw new ArgumentNullException(nameof(employee));
 
-            //эта строка нужна только для реализации сервиса "в памяти"
             if (_db.Employees.Contains(employee)) return;
 
             var db_employee = GetById(employee.Id);
