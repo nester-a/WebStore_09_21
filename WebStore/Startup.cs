@@ -57,7 +57,7 @@ namespace WebStore
                 app.UseBrowserLink();
             }
 
-            //app.UseStatusCodePages();
+            app.UseStatusCodePagesWithRedirects("~/home/status/{0}");
 
             //подключение статических ресурсов
             app.UseStaticFiles();
@@ -67,8 +67,6 @@ namespace WebStore
 
             app.UseMiddleware<TestMiddleware>();
             app.UseWelcomePage("/welcome");
-
-            //app.UseStatusCodePagesWithReExecute("/Home/Status/{0}");
 
             //здесь начинается обработа запросов
             app.UseEndpoints(endpoints =>

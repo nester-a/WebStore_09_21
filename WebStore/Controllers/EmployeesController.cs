@@ -34,7 +34,16 @@ namespace WebStore.Controllers
             if (employee is null) 
                 return NotFound();
 
-            return View(employee);
+            var model = new EmployeeViewModel
+            {
+                Id = employee.Id,
+                Name = employee.FirstName,
+                LastName = employee.LastName,
+                SecondName = employee.Patronymic,
+                Age = employee.Age,
+            };
+
+            return View(model);
         }
         public IActionResult Create() => View("Edit", new EmployeeViewModel());
 

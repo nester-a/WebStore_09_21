@@ -10,11 +10,20 @@
         </div>
         <div class="row">
             <div class="col-sm-8">
-                <partial name="Partial/_ContactForm"/>
+                <partial name="Partial/_ContactForm" />
             </div>
             <div class="col-sm-4">
-                <partial name="Partial/_ContactInfo"/>
+                <partial name="Partial/_ContactInfo" />
             </div>
         </div>
     </div>
 </div><!--/#contact-page-->
+
+@section Styles{
+
+}
+@section Scripts{
+    <script src="http://maps.google.com/maps/api/js?sensor=true"></script>
+    <script src="~/js/gmaps.js"></script>
+    <script src="~/js/contact.js"></script>
+}
