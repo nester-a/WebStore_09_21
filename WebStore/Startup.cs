@@ -11,6 +11,7 @@ using WebStore.DAL.Context;
 using Microsoft.EntityFrameworkCore;
 using WebStore.Data;
 using WebStore.Services.InMemory;
+using WebStore.Services.InSQL;
 
 namespace WebStore
 {
@@ -42,7 +43,8 @@ namespace WebStore
 
 
             services.AddSingleton<IEmployeesData, InMemoryEmployeesData>();
-            services.AddSingleton<IProductData, InMemoryProductData>();
+            //services.AddSingleton<IProductData, InMemoryProductData>();
+            services.AddScoped<IProductData, SqlProductData>();
 
             //после добавления контроллеров с представлением
             //мы конфигурируем доступ к ним с помощью маршрутов
