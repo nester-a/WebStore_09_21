@@ -10,6 +10,7 @@ using WebStore.Services;
 using WebStore.Services.Interfaces;
 using WebStore.DAL.Context;
 using Microsoft.EntityFrameworkCore;
+using WebStore.Data;
 
 namespace WebStore
 {
@@ -36,6 +37,8 @@ namespace WebStore
         {
             services.AddDbContext<WebStoreDB>(opt => 
                 opt.UseSqlServer(Configuration.GetConnectionString("SqlServer")));
+
+            services.AddTransient<WebStoreDbInitializer>();
 
 
             services.AddSingleton<IEmployeesData, InMemoryEmployeesData>();
