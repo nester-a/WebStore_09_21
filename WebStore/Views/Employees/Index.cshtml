@@ -1,5 +1,5 @@
 ﻿
-@model IEnumerable<WebStore.ViewModels.EmployeeViewModel>
+@model IEnumerable<WebStore.Domain.Entities.Employee>
 
 <div class="container">
     <h3>Сотрудники</h3>
@@ -29,8 +29,8 @@
                     <tr>
                         <td>@employee.Id</td>
                         <td>@employee.LastName</td>
-                        <td>@employee.Name</td>
-                        <td>@employee.SecondName</td>
+                        <td>@employee.FirstName</td>
+                        <td>@employee.Patronymic</td>
                         <td>@employee.Age</td>
                         <td>
                             <a asp-controller="Employees" asp-action="Details" asp-route-id="@employee.Id">

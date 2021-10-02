@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -25,6 +26,7 @@ namespace WebStore.Services.InSQL
             if (_db.Employees.Contains(employee)) return employee.Id;
 
             employee.Id = ++_currentMaxId;
+
             _db.Employees.Add(employee);
             _db.SaveChanges();
             return employee.Id;

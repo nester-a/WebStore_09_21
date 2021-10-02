@@ -77,7 +77,7 @@ namespace WebStore.Controllers
 
             var employee = new Employee
             {
-                Id = model.Id,
+                //Id = model.Id,
                 FirstName = model.Name,
                 LastName = model.LastName,
                 Patronymic = model.SecondName,
