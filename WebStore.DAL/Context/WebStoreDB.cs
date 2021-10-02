@@ -25,7 +25,7 @@ namespace WebStore.DAL.Context
         //protected override void OnModelCreating(ModelBuilder model)
         //{
         //    base.OnModelCreating(model);
-
+        //    model.Entity<Section>();
         //}
     }
 }
