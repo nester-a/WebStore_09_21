@@ -6,11 +6,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using WebStore.Infrastructure.Convaentions;
 using WebStore.Infrastructure.Middleware;
-using WebStore.Services;
 using WebStore.Services.Interfaces;
 using WebStore.DAL.Context;
 using Microsoft.EntityFrameworkCore;
 using WebStore.Data;
+using WebStore.Services.InMemory;
 
 namespace WebStore
 {
