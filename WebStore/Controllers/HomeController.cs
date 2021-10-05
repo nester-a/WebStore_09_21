@@ -1,9 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using WebStore.Models;
 
 namespace WebStore.Controllers
 {
@@ -23,6 +18,10 @@ namespace WebStore.Controllers
         public IActionResult ProductDetail() => View();
         public IActionResult Shop() => View();
 
-        public IActionResult Status(string code) => Content($"Status code - {code}");
+        public IActionResult Status(string id) => id switch
+        {
+            "404" => View("Error404"),
+            _ => Content($"Status code - {id}"),
+        };
     }
 }

@@ -6,8 +6,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using WebStore.Infrastructure.Convaentions;
 using WebStore.Infrastructure.Middleware;
-using WebStore.Services;
 using WebStore.Services.Interfaces;
+using WebStore.DAL.Context;
+using Microsoft.EntityFrameworkCore;
+using WebStore.Data;
+using WebStore.Services.InMemory;
+using WebStore.Services.InSQL;
 
 namespace WebStore
 {
@@ -32,10 +36,16 @@ namespace WebStore
         }
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IEmployeesData, InMemoryEmployeesData>();
-            services.AddSingleton<IProductData, InMemoryProductData>();
-            //services.AddScoped<IEmployeesData, InMemoryEmployeesData>();
-            //services.AddTransient<IEmployeesData, InMemoryEmployeesData>();
+            services.AddDbContext<WebStoreDB>(opt => 
+                opt.UseSqlServer(Configuration.GetConnectionString("SqlServer")));
+
+            services.AddTransient<WebStoreDbInitializer>();
+
+
+            //services.AddSingleton<IEmployeesData, InMemoryEmployeesData>();
+            services.AddScoped<IEmployeesData, SqlEmployeesData>();
+            //services.AddSingleton<IProductData, InMemoryProductData>();
+            services.AddScoped<IProductData, SqlProductData>();
 
             //после добавления контроллеров с представлением
             //мы конфигурируем доступ к ним с помощью маршрутов
@@ -57,7 +67,7 @@ namespace WebStore
                 app.UseBrowserLink();
             }
 
-            //app.UseStatusCodePages();
+            app.UseStatusCodePagesWithRedirects("~/home/status/{0}");
 
             //подключение статических ресурсов
             app.UseStaticFiles();
@@ -67,8 +77,6 @@ namespace WebStore
 
             app.UseMiddleware<TestMiddleware>();
             app.UseWelcomePage("/welcome");
-
-            //app.UseStatusCodePagesWithReExecute("/Home/Status/{0}");
 
             //здесь начинается обработа запросов
             app.UseEndpoints(endpoints =>

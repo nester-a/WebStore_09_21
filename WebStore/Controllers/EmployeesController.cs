@@ -1,9 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Linq;
-using WebStore.Data;
-using WebStore.Models;
+using WebStore.Domain.Entities;
 using WebStore.Services.Interfaces;
 using WebStore.ViewModels;
 
@@ -34,7 +31,16 @@ namespace WebStore.Controllers
             if (employee is null) 
                 return NotFound();
 
-            return View(employee);
+            var model = new EmployeeViewModel
+            {
+                Id = employee.Id,
+                Name = employee.FirstName,
+                LastName = employee.LastName,
+                SecondName = employee.Patronymic,
+                Age = employee.Age,
+            };
+
+            return View(model);
         }
         public IActionResult Create() => View("Edit", new EmployeeViewModel());
 
@@ -71,7 +77,7 @@ namespace WebStore.Controllers
 
             var employee = new Employee
             {
-                Id = model.Id,
+                //Id = model.Id,
                 FirstName = model.Name,
                 LastName = model.LastName,
                 Patronymic = model.SecondName,

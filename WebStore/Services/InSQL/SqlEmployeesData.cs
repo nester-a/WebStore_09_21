@@ -1,31 +1,34 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using WebStore.Data;
-using WebStore.Models;
+using WebStore.DAL.Context;
+using WebStore.Domain.Entities;
 using WebStore.Services.Interfaces;
 
-namespace WebStore.Services
+namespace WebStore.Services.InSQL
 {
-    public class InMemoryEmployeesData : IEmployeesData
+    public class SqlEmployeesData : IEmployeesData
     {
-        private readonly ILogger<InMemoryEmployeesData> _logger;
         private int _currentMaxId;
-        public InMemoryEmployeesData(ILogger<InMemoryEmployeesData> logger)
+        private readonly WebStoreDB _db;
+        public SqlEmployeesData(WebStoreDB db)
         {
-            _logger = logger;
-            _currentMaxId = TestData.Employees.Max(e => e.Id);
+            _db = db;
+            _currentMaxId = _db.Employees.Max(e => e.Id);
         }
+
         public int Add(Employee employee)
         {
             if (employee is null) throw new ArgumentNullException(nameof(employee));
 
-            if (TestData.Employees.Contains(employee)) return employee.Id;
+            if (_db.Employees.Contains(employee)) return employee.Id;
 
             employee.Id = ++_currentMaxId;
-            TestData.Employees.Add(employee);
+
+            _db.Employees.Add(employee);
+            _db.SaveChanges();
             return employee.Id;
         }
 
@@ -34,26 +37,20 @@ namespace WebStore.Services
             var db_employee = GetById(id);
             if (db_employee is null) return false;
 
-            TestData.Employees.Remove(db_employee);
+            _db.Employees.Remove(db_employee);
+            _db.SaveChanges();
             return true;
         }
 
-        public IEnumerable<Employee> GetAll()
-        {
-            return TestData.Employees;
-        }
+        public IEnumerable<Employee> GetAll() => _db.Employees;
 
-        public Employee GetById(int id)
-        {
-            return TestData.Employees.SingleOrDefault(e => e.Id == id);
-        }
+        public Employee GetById(int id) =>_db.Employees.SingleOrDefault(e => e.Id == id);
 
         public void Update(Employee employee)
         {
             if (employee is null) throw new ArgumentNullException(nameof(employee));
 
-            //эта строка нужна только для реализации сервиса "в памяти"
-            if (TestData.Employees.Contains(employee)) return;
+            if (_db.Employees.Contains(employee)) return;
 
             var db_employee = GetById(employee.Id);
             if (db_employee is null) return;
@@ -63,7 +60,7 @@ namespace WebStore.Services
             db_employee.Patronymic = employee.Patronymic;
             db_employee.Age = employee.Age;
 
-            //db.SaveChanges();
+            _db.SaveChanges();
         }
     }
 }
