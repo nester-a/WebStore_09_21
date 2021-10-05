@@ -42,12 +42,46 @@ namespace WebStore.Controllers
                 ModelState.AddModelError("", error.Description);
             }
             return View(model);
-        } 
+        }
 
         #endregion
 
-        public IActionResult Login() => View();
-        public IActionResult Logout() => RedirectToAction("Index", "Home");
+        #region Login
+
+        public IActionResult Login(string returnUrl) => View(new LoginViewModel() { ReturnUrl = returnUrl });
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(LoginViewModel model)
+        {
+            if (!ModelState.IsValid) return View(model);
+
+            var loginResult = await _signInManager.PasswordSignInAsync(
+                model.UserName,
+                model.Password,
+                model.RememberMe,
+                false);
+
+            if (loginResult.Succeeded)
+            {
+                //return Redirect(model.ReturnUrl);// Не безопасно!!!
+                //if(Url.IsLocalUrl(model.ReturnUrl)) return Redirect(model.ReturnUrl);
+                //RedirectToAction("Index", "Home");
+
+                return LocalRedirect(model.ReturnUrl ?? "/");
+            }
+            ModelState.AddModelError("", "Ошибка ввода имени пользователя, или пароля");
+
+            return View(model);
+        }
+
+        #endregion
+
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Index", "Home");
+        }
+
         public IActionResult AccessDenied() => View();
     }
 }
