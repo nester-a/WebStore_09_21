@@ -32,8 +32,8 @@ namespace WebStore
         }
         public void ConfigureServices(IServiceCollection services)
         {
-            //регистрируем наш новый сервис
             services.AddSingleton<IEmployeesData, InMemoryEmployeesData>();
+            services.AddSingleton<IProductData, InMemoryProductData>();
             //services.AddScoped<IEmployeesData, InMemoryEmployeesData>();
             //services.AddTransient<IEmployeesData, InMemoryEmployeesData>();
 
@@ -54,7 +54,10 @@ namespace WebStore
                 //здесь подключается страничка обработки исключений
                 //если мы находимся в режиме разработчика
                 app.UseDeveloperExceptionPage();
+                app.UseBrowserLink();
             }
+
+            //app.UseStatusCodePages();
 
             //подключение статических ресурсов
             app.UseStaticFiles();
@@ -64,6 +67,8 @@ namespace WebStore
 
             app.UseMiddleware<TestMiddleware>();
             app.UseWelcomePage("/welcome");
+
+            //app.UseStatusCodePagesWithReExecute("/Home/Status/{0}");
 
             //здесь начинается обработа запросов
             app.UseEndpoints(endpoints =>
