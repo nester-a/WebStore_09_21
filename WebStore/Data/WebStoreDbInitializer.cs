@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using WebStore.DAL.Context;
@@ -41,52 +42,58 @@ namespace WebStore.Data
 
         private async Task InitializeProductsAsync()
         {
-            //var ss = TestData.Sections.GroupBy(s => s.Name)
-            //    .Where(s => s.Count() > 1)
-            //    .Select(s => s.Key)
-            //    .ToArray();
-
+            var timer = Stopwatch.StartNew();
             if (_db.Sections.Any())
             {
                 _logger.LogInformation("Инилциализация БД информацией о товарах не требуется");
                 return;
             }
 
-            _logger.LogInformation("Запись секций...");
+            var sections_pool = TestData.Sections.ToDictionary(section => section.Id);
+            var brands_pool = TestData.Brands.ToDictionary(brand => brand.Id);
+
+            foreach (var child_section in TestData.Sections.Where(s => s.ParentId is not null))
+            {
+                child_section.Parent = sections_pool[(int)child_section.ParentId!];
+            }
+            foreach (var product in TestData.Products)
+            {
+                product.Section = sections_pool[product.SectionId];
+                if(product.BrandId is { } brand_id)
+                {
+                    product.Brand = brands_pool[brand_id];
+                }
+                product.Id = 0;
+                product.SectionId = 0;
+                product.BrandId = null;
+            }
+
+            foreach (var section in TestData.Sections)
+            {
+                section.Id = 0;
+                section.ParentId = null;
+            }
+
+            foreach (var brand in TestData.Brands)
+            {
+                brand.Id = 0;
+            }
+
             await using (await _db.Database.BeginTransactionAsync())
             {
+                _logger.LogInformation("Запись секций...");
                 _db.Sections.AddRange(TestData.Sections);
-
-                await _db.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT [dbo].[Sections] ON");
-                await _db.SaveChangesAsync();
-                await _db.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT [dbo].[Sections] OFF");
-                await _db.Database.CommitTransactionAsync();
-            }
-            _logger.LogInformation("Запись секций выполнена успешно");
-
-            _logger.LogInformation("Запись брэндов...");
-            await using (await _db.Database.BeginTransactionAsync())
-            {
+                _logger.LogInformation("Запись секций выполнена успешно");
+                _logger.LogInformation("Запись брэндов...");
                 _db.Brands.AddRange(TestData.Brands);
-
-                await _db.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT [dbo].[Brands] ON");
-                await _db.SaveChangesAsync();
-                await _db.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT [dbo].[Brands] OFF");
-                await _db.Database.CommitTransactionAsync();
-            }
-            _logger.LogInformation("Запись брэндов выполнена успешно");
-
-            _logger.LogInformation("Запись товаров...");
-            await using (await _db.Database.BeginTransactionAsync())
-            {
+                _logger.LogInformation("Запись брэндов выполнена успешно");
+                _logger.LogInformation("Запись товаров...");
                 _db.Products.AddRange(TestData.Products);
-
-                await _db.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT [dbo].[Products] ON");
+                _logger.LogInformation("Запись товаров выполнена успешно");
+                _logger.LogInformation($"Запись в БД информациии о товарах выполнена успешно за {timer.Elapsed.TotalMilliseconds} мс");
                 await _db.SaveChangesAsync();
-                await _db.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT [dbo].[Products] OFF");
                 await _db.Database.CommitTransactionAsync();
             }
-            _logger.LogInformation("Запись товаров выполнена успешно");
         }
         private async Task InitializeEmployeesAsync()
         {
