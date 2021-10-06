@@ -12,6 +12,9 @@ using Microsoft.EntityFrameworkCore;
 using WebStore.Data;
 using WebStore.Services.InMemory;
 using WebStore.Services.InSQL;
+using WebStore.Domain.Entities.Identity;
+using Microsoft.AspNetCore.Identity;
+using System;
 
 namespace WebStore
 {
@@ -26,10 +29,6 @@ namespace WebStore
         /// </summary>
         public IConfiguration Configuration { get; set; }
 
-        /// <summary>
-        /// Конструктор для внесения конфигурации
-        /// </summary>
-        /// <param name="configuration"></param>
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -39,60 +38,82 @@ namespace WebStore
             services.AddDbContext<WebStoreDB>(opt => 
                 opt.UseSqlServer(Configuration.GetConnectionString("SqlServer")));
 
+            services.AddIdentity<User, Role>(/*opt=> { opt. }*/)
+                .AddEntityFrameworkStores<WebStoreDB>()
+                .AddDefaultTokenProviders();
+
+            services.Configure<IdentityOptions>(opt=> 
+            {
+
+#if DEBUG
+                opt.Password.RequireDigit = false;
+                opt.Password.RequireLowercase = false;
+                opt.Password.RequireUppercase = false;
+                opt.Password.RequireNonAlphanumeric = false;
+                opt.Password.RequiredLength = 3;
+                opt.Password.RequiredUniqueChars = 3;
+#endif
+                opt.User.RequireUniqueEmail = false;
+                opt.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+                opt.Lockout.AllowedForNewUsers = false;
+                opt.Lockout.MaxFailedAccessAttempts = 10;
+                opt.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
+
+            });
+
+            services.ConfigureApplicationCookie(opt=> 
+            {
+                opt.Cookie.Name = "GD.WebStore";
+                opt.Cookie.HttpOnly = true;
+
+                opt.ExpireTimeSpan = TimeSpan.FromDays(10);
+
+                opt.LoginPath = "/Account/Login";
+                opt.LogoutPath = "/Account/Logout";
+                opt.AccessDeniedPath = "/Account/AccessDenied";
+
+                opt.SlidingExpiration = true;
+            });
+
             services.AddTransient<WebStoreDbInitializer>();
 
-
-            //services.AddSingleton<IEmployeesData, InMemoryEmployeesData>();
             services.AddScoped<IEmployeesData, SqlEmployeesData>();
-            //services.AddSingleton<IProductData, InMemoryProductData>();
             services.AddScoped<IProductData, SqlProductData>();
 
-            //после добавления контроллеров с представлением
-            //мы конфигурируем доступ к ним с помощью маршрутов
+
             services.AddControllersWithViews(opt => opt.Conventions.Add(new TestControllerConvention())).AddRazorRuntimeCompilation();
         }
 
-        /// <summary>
-        /// Здесь формируется конвейер, который обрабатывает входящие подключения
-        /// </summary>
-        /// <param name="app"></param>
-        /// <param name="env"></param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
-                //здесь подключается страничка обработки исключений
-                //если мы находимся в режиме разработчика
                 app.UseDeveloperExceptionPage();
                 app.UseBrowserLink();
             }
 
             app.UseStatusCodePagesWithRedirects("~/home/status/{0}");
 
-            //подключение статических ресурсов
             app.UseStaticFiles();
 
-            // здесь подключается маршрутизация
             app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseMiddleware<TestMiddleware>();
             app.UseWelcomePage("/welcome");
 
-            //здесь начинается обработа запросов
             app.UseEndpoints(endpoints =>
             {
-                //обработка запроса по маршруту "/"
                 endpoints.MapGet("/greetings", async context =>
                 {
                     await context.Response.WriteAsync(Configuration["Greetings"]);
                 });
 
-                //конечные точки - это адреса, к которым можно подключится с помощью браузера
-                //или других приложений
                 endpoints.MapControllerRoute(
                     "default",
                     "{controller=Home}/{action=Index}/{id?}");
-                //тоже самое что и
                 endpoints.MapDefaultControllerRoute();
             });
         }
