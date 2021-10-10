@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -6,17 +7,22 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using WebStore.DAL.Context;
+using WebStore.Domain.Entities.Identity;
 
 namespace WebStore.Data
 {
     public class WebStoreDbInitializer
     {
         private readonly WebStoreDB _db;
+        private readonly UserManager<User> _userManager;
+        private readonly RoleManager<Role> _roleManager;
         private readonly ILogger<WebStoreDbInitializer> _logger;
 
-        public WebStoreDbInitializer(WebStoreDB db, ILogger<WebStoreDbInitializer> logger)
+        public WebStoreDbInitializer(WebStoreDB db, UserManager<User> userManager, RoleManager<Role> roleManager, ILogger<WebStoreDbInitializer> logger)
         {
             _db = db;
+            _userManager = userManager;
+            _roleManager = roleManager;
             _logger = logger;
         }
 
@@ -35,8 +41,33 @@ namespace WebStore.Data
                 await _db.Database.MigrateAsync();
             }
 
-            await InitializeProductsAsync();
-            await InitializeEmployeesAsync();
+            try
+            {
+                await InitializeProductsAsync();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Ошибка инициализации каталога товаров");
+                throw;
+            }
+            try
+            {
+                await InitializeEmployeesAsync();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Ошибка инициализации таблицы сотрудников");
+                throw;
+            }
+            try
+            {
+                await InitializeIdentityAsync();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Ошибка инициализации системы Identity");
+                throw;
+            }
             _logger.LogInformation("Завершение инициализации БД");
         }
 
@@ -114,6 +145,11 @@ namespace WebStore.Data
                 await _db.Database.CommitTransactionAsync();
             }
             _logger.LogInformation("Запись сотрудников выполнена успешно");
+        }
+
+        private async Task InitializeIdentityAsync()
+        {
+            _logger.LogInformation("Инициализаия системы Identity");
         }
     }
 }
