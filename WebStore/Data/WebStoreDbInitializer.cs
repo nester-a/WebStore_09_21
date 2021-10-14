@@ -150,6 +150,52 @@ namespace WebStore.Data
         private async Task InitializeIdentityAsync()
         {
             _logger.LogInformation("Инициализаия системы Identity");
+            var timer = Stopwatch.StartNew();
+
+            //if (!await _roleManager.RoleExistsAsync(Role.Administrators))
+            //    await _roleManager.CreateAsync(new Role { Name = Role.Administrators });
+
+            async Task CheckRole(string roleName)
+            {
+                if (await _roleManager.RoleExistsAsync(roleName))
+                    _logger.LogInformation($"Роль {roleName} существует");
+                else
+                {
+                    _logger.LogInformation($"Роль {roleName} не существует");
+                    await _roleManager.CreateAsync(new Role { Name = roleName });
+                    _logger.LogInformation($"Роль {roleName} успешно создана");
+                }
+            }
+
+            await CheckRole(Role.Administrators);
+            await CheckRole(Role.Users);
+
+            if(await _userManager.FindByNameAsync(User.Administrator) is null)
+            {
+                _logger.LogInformation($"Пользователь {User.Administrator} не существует");
+
+                var admin = new User()
+                {
+                    UserName = User.Administrator,
+                };
+
+                var creation_result = await _userManager.CreateAsync(admin, User.DefaultAdminPassword);
+                if (creation_result.Succeeded)
+                {
+                    _logger.LogInformation($"Пользователь {User.Administrator} успешно создан");
+                    await _userManager.AddToRoleAsync(admin, Role.Administrators);
+                    _logger.LogInformation($"Пользователю {User.Administrator} успешно добавлена роль {Role.Administrators}");
+                }
+                else
+                {
+                    var errors = creation_result.Errors.Select(err => err.Description).ToArray();
+                    _logger.LogError($"Учётная запись администратора не создана! Ошибки {string.Join(",", errors)}");
+
+                    throw new InvalidOperationException($"Невозможно создать Администратора {string.Join(",", errors)}");
+                }
+
+                _logger.LogInformation($"Данные системы Identity успешно добавлены в БД за {timer.Elapsed.TotalMilliseconds} мс");
+            }
         }
     }
 }
