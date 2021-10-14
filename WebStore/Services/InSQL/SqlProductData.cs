@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,10 +16,13 @@ namespace WebStore.Services.InSQL
         private readonly WebStoreDB _db;
         public SqlProductData(WebStoreDB db) => _db = db;
         public IEnumerable<Brand> GetBrands() => _db.Brands;
+        public Brand GetBrandById(int id) => _db.Brands.SingleOrDefault(b => b.Id == id);
 
         public IEnumerable<Product> GetProducts(ProductFilter filter)
         {
-            IQueryable<Product> query = _db.Products;
+            IQueryable<Product> query = _db.Products
+            .Include(p => p.Brand)
+            .Include(p => p.Section);
 
             if (filter?.SectionId is { } section_id)
             {
@@ -31,7 +35,13 @@ namespace WebStore.Services.InSQL
 
             return query;
         }
+        public Product GetProductById(int id) => _db.Products
+            .Include(p => p.Brand)
+            .Include(p => p.Section)
+            .FirstOrDefault(p => p.Id == id);
 
         public IEnumerable<Section> GetSections() => _db.Sections;
+        public Section GetSectionById(int id) => _db.Sections.SingleOrDefault(s => s.Id == id);
+
     }
 }
