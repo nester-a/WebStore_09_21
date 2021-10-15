@@ -71,7 +71,7 @@ namespace WebStore.Services.InCookies
             var item = cart.Items.FirstOrDefault(i => i.ProductId == id);
             if (item is null) return;
 
-            if (item.Quantity <= 0)
+            if (item.Quantity > 0)
                 item.Quantity--;
 
             if (item.Quantity <= 0)
