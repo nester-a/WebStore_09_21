@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System;
 using System.Linq;
 using WebStore.Domain.Entities;
+using WebStore.Infrastructure.Mapping;
 using WebStore.Services.Interfaces;
 using WebStore.ViewModels;
 
@@ -78,10 +79,6 @@ namespace WebStore.Services.InCookies
 
            Cart = cart;
         }
-        public CartViewModel GetViewModel()
-        {
-            return null;
-        }
         public void Remove(int id)
         {
             var cart = Cart;
@@ -97,6 +94,22 @@ namespace WebStore.Services.InCookies
         {
             cookies.Delete(_cartName);
             cookies.Append(_cartName, cart);
+        }
+        public CartViewModel GetViewModel()
+        {
+            var products = _productData.GetProducts(new()
+            {
+                Ids = Cart.Items.Select(i => i.ProductId).ToArray()
+            });
+
+            var productsViews = products.ToView().ToDictionary(p => p.Id);
+
+            return new CartViewModel
+            {
+                Items = Cart.Items
+                .Where(i => productsViews.ContainsKey(i.ProductId))
+                .Select(i => (productsViews[i.ProductId], i.Quantity))
+            };
         }
     }
 }

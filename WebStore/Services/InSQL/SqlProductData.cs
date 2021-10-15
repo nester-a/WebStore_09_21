@@ -18,19 +18,28 @@ namespace WebStore.Services.InSQL
         public IEnumerable<Brand> GetBrands() => _db.Brands;
         public Brand GetBrandById(int id) => _db.Brands.SingleOrDefault(b => b.Id == id);
 
-        public IEnumerable<Product> GetProducts(ProductFilter filter)
+        public IEnumerable<Product> GetProducts(ProductFilter filter = null)
         {
             IQueryable<Product> query = _db.Products
             .Include(p => p.Brand)
             .Include(p => p.Section);
 
-            if (filter?.SectionId is { } section_id)
+
+
+            if (filter?.Ids.Length > 0)
             {
-                query = query.Where(p => p.SectionId == section_id);
+                query = query.Where(product => filter.Ids.Contains(product.Id));
             }
-            if (filter?.BrandId is { } brand_id)
+            else
             {
-                query = query.Where(p => p.BrandId == brand_id);
+                if (filter?.SectionId is { } section_id)
+                {
+                    query = query.Where(p => p.SectionId == section_id);
+                }
+                if (filter?.BrandId is { } brand_id)
+                {
+                    query = query.Where(p => p.BrandId == brand_id);
+                }
             }
 
             return query;
