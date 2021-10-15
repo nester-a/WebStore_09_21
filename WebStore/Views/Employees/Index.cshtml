@@ -5,13 +5,16 @@
     <h3>Сотрудники</h3>
     <hr />
 
-    <p>
-        <a asp-controller="Employees" asp-action="Create" class="btn-default">Создать 1</a>
-        <a asp-controller="Employees" asp-action="Edit" class="btn-default">Создать 2</a>
-    </p>
+    @if (User.IsInRole(Role.Administrators))
+    {
+        <p>
+            <a asp-controller="Employees" asp-action="Create" class="btn-default">Создать 1</a>
+            <a asp-controller="Employees" asp-action="Edit" class="btn-default">Создать 2</a>
+        </p>
+    }
 
     @if (Model.Any())
-     {
+    {
         <table class="table">
             <thead>
                 <tr>
@@ -35,26 +38,29 @@
                         <td>
                             <a asp-controller="Employees" asp-action="Details" asp-route-id="@employee.Id">
                                 <i class="fa fa-info"></i>
-                            </a>|
-                            <a asp-controller="Employees" asp-action="Edit" asp-route-id="@employee.Id">
-                                <i class="fa fa-edit"></i>
-                            </a>|
-                            <a asp-controller="Employees" asp-action="Delete" asp-route-id="@employee.Id" class="text-danger">
-                                <i class="fa fa-cut"></i>
-                            </a>|
-                            <form asp-action="DeleteConfirmed" asp-route-id="@employee.Id">
-                                <input type="submit" value="Delete" class="btn btn-danger" />
-                            </form>
+                            </a>
+                            @if (User.IsInRole(Role.Administrators))
+                            {
+                                <a asp-controller="Employees" asp-action="Edit" asp-route-id="@employee.Id">
+                                    <i class="fa fa-edit"></i>
+                                </a>
+                                <a asp-controller="Employees" asp-action="Delete" asp-route-id="@employee.Id" class="text-danger">
+                                    <i class="fa fa-cut"></i>
+                                </a>
+                                <form asp-action="DeleteConfirmed" asp-route-id="@employee.Id">
+                                    <input type="submit" value="Delete" class="btn btn-danger" />
+                                </form>
+                            }
                         </td>
                     </tr>
                 }
             </tbody>
         </table>
-     }
-     else
-     {
+    }
+    else
+    {
         <p>Сотрудников нет!</p>
-     }
+    }
     <p>
         <a asp-controller="Home" asp-action="Index" class="btn btn-default">Домой</a>
     </p>
